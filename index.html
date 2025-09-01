@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ParalelSoft - Генераторы</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a081f, #1a1758, #0f0c29);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(114, 137, 218, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(67, 181, 129, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(240, 71, 71, 0.1) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto 30px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-text {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #7289da, #ffffff, #99aab5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px rgba(114, 137, 218, 0.5);
+        }
+
+        .telegram-btn {
+            background: linear-gradient(45deg, #0088cc, #00a8ff);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 136, 204, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .telegram-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 136, 204, 0.6);
+        }
+
+        .telegram-btn:active {
+            transform: translateY(1px);
+        }
+
+        .buttons-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .test-button {
+            background: rgba(25, 28, 48, 0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            padding: 25px 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(114, 137, 218, 0.3);
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .test-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            border-color: rgba(114, 137, 218, 0.6);
+        }
+
+        .button-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+            color: #7289da;
+            transition: transform 0.3s ease;
+        }
+
+        .test-button:hover .button-icon {
+            transform: scale(1.1);
+        }
+
+        .button-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .button-description {
+            color: #99aab5;
+            font-size: 0.9rem;
+            margin-top: auto;
+            padding-top: 10px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: rgba(25, 28, 48, 0.95);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 90%;
+            max-width: 700px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(114, 137, 218, 0.4);
+            position: relative;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #99aab5;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: white;
+        }
+
+        .modal-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 25px;
+            text-align: center;
+            background: linear-gradient(45deg, #7289da, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(114, 137, 218, 0.7);
+            letter-spacing: 2px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .modal-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #7289da, transparent);
+        }
+
+        .info-box {
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(114, 137, 218, 0.2);
+            position: relative;
+        }
+
+        .info-line {
+            display: flex;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .info-line:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-icon {
+            color: #7289da;
+            font-size: 1.2rem;
+            margin-right: 15px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .info-text {
+            color: #dcddde;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .frame {
+            border: 1px solid rgba(114, 137, 218, 0.4);
+            border-radius: 12px;
+            padding: 25px;
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .frame-line {
+            position: absolute;
+            background: rgba(114, 137, 218, 0.3);
+        }
+
+        .frame-line.top {
+            top: -1px;
+            left: 30px;
+            right: 30px;
+            height: 1px;
+        }
+
+        .frame-line.right {
+            top: 30px;
+            bottom: 30px;
+            right: -1px;
+            width: 1px;
+        }
+
+        .frame-line.bottom {
+            bottom: -1px;
+            left: 30px;
+            right: 30px;
+            height: 1px;
+        }
+
+        .frame-line.left {
+            top: 30px;
+            bottom: 30px;
+            left: -1px;
+            width: 1px;
+        }
+
+        .frame-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .frame-text {
+            color: #99aab5;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .support-btn {
+            background: rgba(114, 137, 218, 0.2);
+            color: #99aab5;
+            border: 1px solid rgba(114, 137, 218, 0.3);
+            padding: 14px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .support-btn:hover {
+            background: rgba(114, 137, 218, 0.3);
+            color: white;
+        }
+
+        .install-btn {
+            background: linear-gradient(45deg, #43b581, #3ca374);
+            color: white;
+            border: none;
+            padding: 14px 40px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(67, 181, 129, 0.4);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .install-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(67, 181, 129, 0.6);
+        }
+
+        .install-btn:hover span {
+            background: linear-gradient(45deg, #fff, #caffd9, #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 1.5s infinite;
+            background-size: 200% auto;
+        }
+
+        .install-btn:active {
+            transform: translateY(1px);
+        }
+
+        @keyframes shine {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        .stars {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -2;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle linear infinite;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .modal-content {
+                padding: 30px 20px;
+            }
+            
+            .modal-title {
+                font-size: 1.8rem;
+            }
+            
+            .frame-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-buttons {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .support-btn, .install-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+    
+    <div class="header">
+        <div class="logo">
+            <div class="logo-text">ParalelSoft</div>
+        </div>
+        <a href="https://t.me/ParalelSoft" class="telegram-btn">
+            <i class="fab fa-telegram"></i> Telegram
+        </a>
+    </div>
+    
+    <div class="buttons-container">
+        <!-- Кнопка генератора Nitro -->
+        <div class="test-button" data-modal="modal-nitro">
+            <div class="button-icon">
+                <i class="fas fa-gift"></i>
+            </div>
+            <div class="button-title">Генератор нитро</div>
+            <div class="button-description">Python файл (шанс очень мал)</div>
+        </div>
+        
+        <!-- Остальные кнопки "Тест" -->
+        <div class="test-button" data-modal="modal-test">
+            <div class="button-icon">
+                <i class="fas fa-code"></i>
+            </div>
+            <div class="button-title">Тест</div>
+            <div class="button-description">Описание тестовой кнопки</div>
+        </div>
+        
+        <div class="test-button" data-modal="modal-test">
+            <div class="button-icon">
+                <i class="fas fa-cog"></i>
+            </div>
+            <div class="button-title">Тест</div>
+            <div class="button-description">Описание тестовой кнопки</div>
+        </div>
+        
+        <div class="test-button" data-modal="modal-test">
+            <div class="button-icon">
+                <i class="fas fa-bolt"></i>
+            </div>
+            <div class="button-title">Тест</div>
+            <div class="button-description">Описание тестовой кнопки</div>
+        </div>
+        
+        <div class="test-button" data-modal="modal-test">
+            <div class="button-icon">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <div class="button-title">Тест</div>
+            <div class="button-description">Описание тестовой кнопки</div>
+        </div>
+        
+        <div class="test-button" data-modal="modal-test">
+            <div class="button-icon">
+                <i class="fas fa-gamepad"></i>
+            </div>
+            <div class="button-title">Тест</div>
+            <div class="button-description">Описание тестовой кнопки</div>
+        </div>
+        
+        <div class="test-button" data-modal="modal-test">
+            <div class="button-icon">
+                <i class="fas fa-music"></i>
+            </div>
+            <div class="button-title">Тест</div>
+            <div class="button-description">Описание тестовой кнопки</div>
+        </div>
+        
+        <div class="test-button" data-modal="modal-test">
+            <div class="button-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="button-title">Тест</div>
+            <div class="button-description">Описание тестовой кнопки</div>
+        </div>
+    </div>
+    
+    <!-- Модальное окно генератора Nitro -->
+    <div class="modal" id="modal-nitro">
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <h2 class="modal-title">ГЕНЕРАТОР НИТРО</h2>
+            
+            <div class="info-box">
+                <div class="info-line">
+                    <div class="info-icon"><i class="fab fa-python"></i></div>
+                    <div class="info-text">Файл написан на Python</div>
+                </div>
+                <div class="info-line">
+                    <div class="info-icon"><i class="fas fa-code"></i></div>
+                    <div class="info-text">Использует алгоритмы шифрования для генерации кодов</div>
+                </div>
+                <div class="info-line">
+                    <div class="info-icon"><i class="fas fa-cogs"></i></div>
+                    <div class="info-text">Автоматическая проверка сгенерированных кодов</div>
+                </div>
+                <div class="info-line">
+                    <div class="info-icon"><i class="fas fa-shield-alt"></i></div>
+                    <div class="info-text">Не требует доступ к вашему аккаунту Discord</div>
+                </div>
+            </div>
+            
+            <div class="frame">
+                <div class="frame-line top"></div>
+                <div class="frame-line right"></div>
+                <div class="frame-line bottom"></div>
+                <div class="frame-line left"></div>
+                
+                <div class="frame-content">
+                    <div class="frame-text">Нажимая "Установить" вы качаете файл</div>
+                    <div class="frame-text">Файл создан в образовательных целях</div>
+                    <div class="frame-text">Который генерирует нитро в Discord</div>
+                    <div class="frame-text">Автор не несет ответственности</div>
+                    <div class="frame-text">Но знайте что шанс очень мал</div>
+                    <div class="frame-text">За использование программы</div>
+                </div>
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="support-btn" id="supportBtn">
+                    <i class="fas fa-question-circle"></i> Поддержка
+                </button>
+                <button class="install-btn" id="installBtn">
+                    <i class="fas fa-download"></i> <span>Установить</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальное окно для тестовых кнопок -->
+    <div class="modal" id="modal-test">
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <h2 class="modal-title">ТЕСТОВАЯ ФУНКЦИЯ</h2>
+            <p class="info-text" style="text-align: center; margin-bottom: 25px;">
+                Это тестовая функция, которая находится в разработке.
+            </p>
+            
+            <div style="text-align: center;">
+                <button class="install-btn">
+                    <i class="fas fa-download"></i> <span>Установить</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const stars = document.getElementById('stars');
+            const modalClose = document.querySelectorAll('.modal-close');
+            const buttons = document.querySelectorAll('.test-button');
+            const modals = document.querySelectorAll('.modal');
+            const supportBtn = document.getElementById('supportBtn');
+            const installBtn = document.getElementById('installBtn');
+            
+            // Создание звёздного фона
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                star.style.width = Math.random() * 3 + 'px';
+                star.style.height = star.style.width;
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDuration = Math.random() * 5 + 3 + 's';
+                star.style.animationDelay = Math.random() * 5 + 's';
+                stars.appendChild(star);
+            }
+            
+            // Открытие модального окна
+            buttons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const modalId = button.getAttribute('data-modal');
+                    const modal = document.getElementById(modalId);
+                    modal.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                });
+            });
+            
+            // Закрытие модального окна
+            modalClose.forEach(close => {
+                close.addEventListener('click', () => {
+                    const modal = close.closest('.modal');
+                    modal.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                });
+            });
+            
+            // Закрытие при клике вне модального окна
+            modals.forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.classList.remove('active');
+                        document.body.style.overflow = 'auto';
+                    }
+                });
+            });
+            
+            // Обработчик нажатия на кнопку поддержки
+            if (supportBtn) {
+                supportBtn.addEventListener('click', function() {
+                    window.open('https://t.me/ParalelSoft', '_blank');
+                });
+            }
+            
+            // Обработчик нажатия на кнопку установки
+            if (installBtn) {
+                installBtn.addEventListener('click', function() {
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-external-link-alt"></i> <span>Переход...</span>';
+                    this.style.background = 'linear-gradient(45deg, #7289da, #5b6eae)';
+                    
+                    // Перенаправление на Google Drive
+                    setTimeout(() => {
+                        window.open('https://drive.google.com/file/d/1ewmbjZCfhKxyw5i6ub21D7CpTGdcJDGZ/view?usp=sharing', '_blank');
+                        
+                        // Возвращаем исходный вид кнопки через 2 секунды
+                        setTimeout(() => {
+                            this.innerHTML = '<i class="fas fa-download"></i> <span>Установить</span>';
+                            this.style.background = 'linear-gradient(45deg, #43b581, #3ca374)';
+                        }, 2000);
+                    }, 500);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
